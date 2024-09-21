@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Realistic Tilt Isometric Grid</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+<script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const TILE_WIDTH = 64;
+    const TILE_HEIGHT = 32;
+    const mapWidth = 10;
+    const mapHeight = 10;
+    const gravity = 0.025;
+    const friction = 0.99;
+    const maxTilt = Math.PI / 12;
+
+    let tilt = { x: 0, y: 0 };
+    let currentTilt = { x: 0, y: 0 };
+    let ball = {
+        x: mapWidth / 2 - 1,
+        y: mapHeight / 2 - 1,
+        velocityX: 0,
+        velocityY: 0,
+        falling: false,
+        fallDepth: 0,
+        size: 10,
+        opacity: 1
+    };
+
+    // Curved wall objects
+    const walls = [
+        { x: 2, y: 3, radius: 20, height: 15, direction: 'left' },
+        { x: 5, y: 4, radius: 20, height: 15, direction: 'right' },
+        { x: 7, y: 3, radius: 20, height: 15, direction: 'left' }
+    ];
+
+    function isoToScreen(x, y) {
+        let screenX = (x - y) * TILE_WIDTH / 2;
+        let screenY = (x + y) * TILE_HEIGHT / 2;
+
+        let tiltFactorX = Math.sin(currentTilt.x) * 0.5;
+        let tiltFactorY = Math.sin(currentTilt.y) * 0.5;
+
+        screenX += tiltFactorX * (x - mapWidth / 2) * 20;
+        screenY += tiltFactorY * (y - mapHeight / 2) * 20;
+
+        return {
+            x: screenX + canvas.width / 2,
+            y: screenY + canvas.height / 2 - ball.fallDepth
+        };
+    }
+
+    function drawMap() {
+        ctx.save();
+        ctx.translate(canvas.width / 2, canvas.height / 2);
+        ctx.rotate(currentTilt.x / 4);
+        ctx.translate(-canvas.width / 2, -canvas.height / 2);
+
+        for (let y = 0; y < mapHeight; y++) {
+            for (let x = 0; x < mapWidth; x++) {
+                const coords = isoToScreen(x, y);
+                ctx.strokeStyle = 'gray';
+                ctx.fillStyle = 'rgba(150, 150, 150, 0.2)';
+                ctx.beginPath();
+                ctx.moveTo(coords.x, coords.y);
+                ctx.lineTo(coords.x + TILE_WIDTH / 2, coords.y + TILE_HEIGHT / 2);
+                ctx.lineTo(coords.x, coords.y + TILE_HEIGHT);
+                ctx.lineTo(coords.x - TILE_WIDTH / 2, coords.y + TILE_HEIGHT / 2);
+                ctx.closePath();
+                ctx.stroke();
+                ctx.fill();
+            }
+        }
+
+        // Draw the hole
+        const holeCoords = isoToScreen(Math.floor(mapWidth / 2), Math.floor(mapHeight / 2));
+        ctx.fillStyle = 'black';
+        ctx.beginPath();
+        ctx.ellipse(holeCoords.x, holeCoords.y, TILE_WIDTH / 2, TILE_HEIGHT / 2, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.restore();
+    }
+
+    function drawCurvedWall(wall) {
+        const coords = isoToScreen(wall.x, wall.y);
+        ctx.fillStyle = 'blue'; // Base color
+
+        // Create the 3D-like effect
+        ctx.beginPath();
+        ctx.moveTo(coords.x, coords.y);
+        
+        if (wall.direction === 'left') {
+            ctx.bezierCurveTo(coords.x - wall.radius, coords.y - wall.height, coords.x - wall.radius, coords.y + wall.height, coords.x, coords.y);
+        } else {
+            ctx.bezierCurveTo(coords.x + wall.radius, coords.y - wall.height, coords.x + wall.radius, coords.y + wall.height, coords.x, coords.y);
+        }
+
+        ctx.lineTo(coords.x, coords.y);
+        ctx.closePath();
+        ctx.fill();
+
+        // Draw shadow for depth
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+        ctx.beginPath();
+        ctx.moveTo(coords.x, coords.y);
+        ctx.lineTo(coords.x + (wall.direction === 'left' ? -5 : 5), coords.y + wall.height);
+        ctx.lineTo(coords.x + (wall.direction === 'left' ? -5 : 5), coords.y);
+        ctx.closePath();
+        ctx.fill();
+    }
+
+    function drawWalls() {
+        walls.forEach(drawCurvedWall);
+    }
+
+    function drawBall() {
+        const coords = isoToScreen(ball.x, ball.y);
+        ctx.fillStyle = `rgba(255, 0, 0, ${ball.opacity})`;
+        ctx.beginPath();
+        ctx.arc(coords.x, coords.y, ball.size, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    function checkCollision() {
+        walls.forEach(wall => {
+            const wallCoords = isoToScreen(wall.x, wall.y);
+            const distance = Math.sqrt((ball.x - wall.x) ** 2 + (ball.y - wall.y) ** 2);
+            if (distance < wall.radius / TILE_WIDTH) {
+                // Handle collision by stopping the ball
+                ball.velocityX = 0;
+                ball.velocityY = 0;
+            }
+        });
+    }
+
+    function updateBall() {
+        if (ball.falling) {
+            ball.fallDepth += 2;
+            ball.size *= 0.9;
+            ball.opacity -= 0.05;
+
+            if (ball.opacity <= 0) {
+                alert('You win!');
+                resetBall();
+            }
+            return; // Exit to avoid further updates when falling
+        }
+
+        ball.velocityX += currentTilt.x * gravity;
+        ball.velocityY += currentTilt.y * gravity;
+
+        ball.velocityX *= friction;
+        ball.velocityY *= friction;
+
+        ball.x += ball.velocityX;
+        ball.y += ball.velocityY;
+
+        // Check if the ball falls into the hole
+        const holeX = Math.floor(mapWidth / 2);
+        const holeY = Math.floor(mapHeight / 2);
+        const holeRadiusX = TILE_WIDTH / 2;
+        const holeRadiusY = TILE_HEIGHT / 2;
+
+        if (ball.x >= holeX - holeRadiusX / TILE_WIDTH && ball.x <= holeX + holeRadiusX / TILE_WIDTH &&
+            ball.y >= holeY - holeRadiusY / TILE_HEIGHT && ball.y <= holeY + holeRadiusY / TILE_HEIGHT) {
+            ball.falling = true;
+        }
+
+        // Check collision with walls
+        checkCollision();
+
+        // Keep the ball within the boundaries
+        if (ball.x < 0) {
+            ball.x = 0;
+            ball.velocityX = -ball.velocityX * 0.5;
+        }
+        if (ball.x > mapWidth - 1) {
+            ball.x = mapWidth - 1;
+            ball.velocityX = -ball.velocityX * 0.5;
+        }
+        if (ball.y < 0) {
+            ball.y = 0;
+            ball.velocityY = -ball.velocityY * 0.5;
+        }
+        if (ball.y > mapHeight - 1) {
+            ball.y = mapHeight - 1;
+            ball.velocityY = -ball.velocityY * 0.5;
+        }
+    }
+
+    function resetBall() {
+        ball.x = mapWidth / 2 - 1;
+        ball.y = mapHeight / 2 - 1;
+        ball.velocityX = 0;
+        ball.velocityY = 0;
+        ball.falling = false;
+        ball.fallDepth = 0;
+        ball.size = 10;
+        ball.opacity = 1;
+    }
+
+    function updateTilt() {
+        currentTilt.x += (tilt.x - currentTilt.x) * 0.1;
+        currentTilt.y += (tilt.y - currentTilt.y) * 0.1;
+    }
+
+    window.addEventListener('keydown', function(e) {
+        switch (e.key.toLowerCase()) {
+            case 'q':
+                tilt.x = -maxTilt; tilt.y = -maxTilt;
+                break;
+            case 'w':
+                tilt.x = 0; tilt.y = -maxTilt;
+                break;
+            case 'e':
+                tilt.x = maxTilt; tilt.y = -maxTilt;
+                break;
+            case 'a':
+                tilt.x = -maxTilt; tilt.y = 0;
+                break;
+            case 's':
+                tilt.x = 0; tilt.y = 0;
+                break;
+            case 'd':
+                tilt.x = maxTilt; tilt.y = 0;
+                break;
+            case 'z':
+                tilt.x = -maxTilt; tilt.y = maxTilt;
+                break;
+            case 'x':
+                tilt.x = 0; tilt.y = maxTilt;
+                break;
+            case 'c':
+                tilt.x = maxTilt; tilt.y = maxTilt;
+                break;
+        }
+    });
+
+    // For mobile tilt controls
+    if (window.DeviceOrientationEvent) {
+        window.addEventListener('deviceorientation', function(event) {
+            tilt.x = (event.beta / 180 * Math.PI) / 2; // Normalize to range
+            tilt.y = (event.gamma / 180 * Math.PI) / 2; // Normalize to range
+        });
+    }
+
+    function gameLoop() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawMap();
+        drawWalls(); // Draw curved walls
+        updateTilt();
+        updateBall();
+        drawBall();
+        requestAnimationFrame(gameLoop);
+    }
+
+    gameLoop();
+</script>
+</body>
+</html>
