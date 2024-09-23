@@ -208,30 +208,22 @@
         touchStartY = touch.clientY;
     });
 
-    canvas.addEventListener('touchend', (event) => {
-        const touch = event.changedTouches[0];
-        const touchEndX = touch.clientX;
-        const touchEndY = touch.clientY;
+    canvas.addEventListener('touchmove', (event) => {
+        const touch = event.touches[0];
+        const touchX = touch.clientX;
+        const touchY = touch.clientY;
 
-        const diffX = touchEndX - touchStartX;
-        const diffY = touchEndY - touchStartY;
+        const diffX = touchX - touchStartX;
+        const diffY = touchY - touchStartY;
 
-        // Determine tilt direction based on swipe
-        if (Math.abs(diffX) > Math.abs(diffY)) {
-            // Horizontal swipe
-            if (diffX > 0) {
-                tilt.x = maxTilt; tilt.y = 0; // Swipe right
-            } else {
-                tilt.x = -maxTilt; tilt.y = 0; // Swipe left
-            }
-        } else {
-            // Vertical swipe
-            if (diffY > 0) {
-                tilt.x = 0; tilt.y = maxTilt; // Swipe down
-            } else {
-                tilt.x = 0; tilt.y = -maxTilt; // Swipe up
-            }
-        }
+        tilt.x = (diffX / canvas.width) * maxTilt;  // Scale to tilt
+        tilt.y = (diffY / canvas.height) * maxTilt; // Scale to tilt
+    });
+
+    canvas.addEventListener('touchend', () => {
+        // Reset tilt on touch end
+        tilt.x = 0;
+        tilt.y = 0;
     });
 
     function gameLoop() {
