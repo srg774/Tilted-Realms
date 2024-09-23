@@ -43,13 +43,6 @@
         opacity: 1
     };
 
-    // Curved wall objects
-    const walls = [
-        { x: 2, y: 3, radius: 20, height: 15, direction: 'left' },
-        { x: 5, y: 4, radius: 20, height: 15, direction: 'right' },
-        { x: 7, y: 3, radius: 20, height: 15, direction: 'left' }
-    ];
-
     function isoToScreen(x, y) {
         let screenX = (x - y) * TILE_WIDTH / 2;
         let screenY = (x + y) * TILE_HEIGHT / 2;
@@ -98,56 +91,12 @@
         ctx.restore();
     }
 
-    function drawCurvedWall(wall) {
-        const coords = isoToScreen(wall.x, wall.y);
-        ctx.fillStyle = 'blue'; // Base color
-
-        // Create the 3D-like effect
-        ctx.beginPath();
-        ctx.moveTo(coords.x, coords.y);
-        
-        if (wall.direction === 'left') {
-            ctx.bezierCurveTo(coords.x - wall.radius, coords.y - wall.height, coords.x - wall.radius, coords.y + wall.height, coords.x, coords.y);
-        } else {
-            ctx.bezierCurveTo(coords.x + wall.radius, coords.y - wall.height, coords.x + wall.radius, coords.y + wall.height, coords.x, coords.y);
-        }
-
-        ctx.lineTo(coords.x, coords.y);
-        ctx.closePath();
-        ctx.fill();
-
-        // Draw shadow for depth
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
-        ctx.beginPath();
-        ctx.moveTo(coords.x, coords.y);
-        ctx.lineTo(coords.x + (wall.direction === 'left' ? -5 : 5), coords.y + wall.height);
-        ctx.lineTo(coords.x + (wall.direction === 'left' ? -5 : 5), coords.y);
-        ctx.closePath();
-        ctx.fill();
-    }
-
-    function drawWalls() {
-        walls.forEach(drawCurvedWall);
-    }
-
     function drawBall() {
         const coords = isoToScreen(ball.x, ball.y);
         ctx.fillStyle = `rgba(255, 0, 0, ${ball.opacity})`;
         ctx.beginPath();
         ctx.arc(coords.x, coords.y, ball.size, 0, Math.PI * 2);
         ctx.fill();
-    }
-
-    function checkCollision() {
-        walls.forEach(wall => {
-            const wallCoords = isoToScreen(wall.x, wall.y);
-            const distance = Math.sqrt((ball.x - wall.x) ** 2 + (ball.y - wall.y) ** 2);
-            if (distance < wall.radius / TILE_WIDTH) {
-                // Handle collision by stopping the ball
-                ball.velocityX = 0;
-                ball.velocityY = 0;
-            }
-        });
     }
 
     function updateBall() {
@@ -182,9 +131,6 @@
             ball.y >= holeY - holeRadiusY / TILE_HEIGHT && ball.y <= holeY + holeRadiusY / TILE_HEIGHT) {
             ball.falling = true;
         }
-
-        // Check collision with walls
-        checkCollision();
 
         // Keep the ball within the boundaries
         if (ball.x < 0) {
@@ -253,18 +199,44 @@
         }
     });
 
-    // For mobile tilt controls
-    if (window.DeviceOrientationEvent) {
-        window.addEventListener('deviceorientation', function(event) {
-            tilt.x = (event.beta / 180 * Math.PI) / 2; // Normalize to range
-            tilt.y = (event.gamma / 180 * Math.PI) / 2; // Normalize to range
-        });
-    }
+    // Mobile touch controls
+    let touchStartX, touchStartY;
+
+    canvas.addEventListener('touchstart', (event) => {
+        const touch = event.touches[0];
+        touchStartX = touch.clientX;
+        touchStartY = touch.clientY;
+    });
+
+    canvas.addEventListener('touchend', (event) => {
+        const touch = event.changedTouches[0];
+        const touchEndX = touch.clientX;
+        const touchEndY = touch.clientY;
+
+        const diffX = touchEndX - touchStartX;
+        const diffY = touchEndY - touchStartY;
+
+        // Determine tilt direction based on swipe
+        if (Math.abs(diffX) > Math.abs(diffY)) {
+            // Horizontal swipe
+            if (diffX > 0) {
+                tilt.x = maxTilt; tilt.y = 0; // Swipe right
+            } else {
+                tilt.x = -maxTilt; tilt.y = 0; // Swipe left
+            }
+        } else {
+            // Vertical swipe
+            if (diffY > 0) {
+                tilt.x = 0; tilt.y = maxTilt; // Swipe down
+            } else {
+                tilt.x = 0; tilt.y = -maxTilt; // Swipe up
+            }
+        }
+    });
 
     function gameLoop() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         drawMap();
-        drawWalls(); // Draw curved walls
         updateTilt();
         updateBall();
         drawBall();
