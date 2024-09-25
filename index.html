@@ -3,61 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Modern Blog</title>
+    <title>Drag-and-Drop To-Do List</title>
     <link rel="stylesheet" href="css/styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <!-- Header -->
-    <header class="main-header">
-        <div class="container">
-            <h1 class="blog-title">My Modern Blog</h1>
-            <nav>
-                <ul class="nav-list">
-                    <li><a href="#home">Home</a></li>
-                    <li><a href="#about">About</a></li>
-                    <li><a href="#blog">Blog</a></li>
-                    <li><a href="#contact">Contact</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
+    <div id="todo-app">
+        <h1>Drag and Drop To-Do List</h1>
+        <ul id="todo-list">
+            <li draggable="true" class="draggable-item">Task 1</li>
+            <li draggable="true" class="draggable-item">Task 2</li>
+            <li draggable="true" class="draggable-item">Task 3</li>
+            <li draggable="true" class="draggable-item">Task 4</li>
+        </ul>
+    </div>
 
-    <!-- Main Content -->
-    <main>
-        <section class="blog-section" id="blog">
-            <div class="container">
-                <article class="blog-post">
-                    <h2 class="post-title">Blog Post Title 1</h2>
-                    <p class="post-meta">Posted on September 24, 2024 by Author</p>
-                    <p class="post-content">
-                        This is a brief excerpt of the blog post. Click to read more...
-                    </p>
-                    <a href="#" class="read-more">Read More</a>
-                </article>
-
-                <article class="blog-post">
-                    <h2 class="post-title">Blog Post Title 2</h2>
-                    <p class="post-meta">Posted on September 20, 2024 by Author</p>
-                    <p class="post-content">
-                        Another interesting post with a slick design and modern typography.
-                    </p>
-                    <a href="#" class="read-more">Read More</a>
-                </article>
-            </div>
-        </section>
-    </main>
-
-    <!-- Footer -->
-    <footer>
-        <div class="container">
-            <p>&copy; 2024 My Modern Blog. All Rights Reserved.</p>
-        </div>
-    </footer>
-
-    <!-- Scripts -->
-    <script src="js/main.js"></script>
+    <script src="js/dragndrop.js"></script>
 </body>
 </html>
