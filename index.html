@@ -6,22 +6,42 @@
     <title>Sequential Visualizations</title>
     <style>
         body {
-            text-align: center;
+            background-color: #121212;
+            color: #00FF00; /* Neon green text */
             font-family: Arial, sans-serif;
+            text-align: center;
             margin: 0;
             padding: 0;
-            background-color: #f4f4f4;
         }
         iframe {
             width: 80%;
             height: 80vh;
             border: none;
             margin: 20px auto;
+            transition: all 0.3s ease;
+        }
+        #visualizationFrame.fullscreen {
+            width: 100vw;
+            height: 100vh;
         }
         .message {
             font-size: 18px;
             margin: 10px;
-            color: #555;
+            color: #00FF00;
+        }
+        .button {
+            background-color: #00FF00;
+            color: #121212;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            margin: 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .button:hover {
+            background-color: #007700;
         }
     </style>
 </head>
@@ -29,6 +49,8 @@
     <h1>Sequential Visualizations</h1>
     <div class="message" id="message">Visualization 1 is loading...</div>
     <iframe id="visualizationFrame"></iframe>
+    <br>
+    <button id="nextButton" class="button">Next Visualization</button>
 
     <script>
         const visualizations = [
@@ -37,32 +59,38 @@
             "viz2.html"  // Third visualization
         ];
 
-        const durations = [10000, 15000, 20000]; // Time each visualization will display (in milliseconds)
-
+        let currentIndex = 0;
         const frame = document.getElementById('visualizationFrame');
         const message = document.getElementById('message');
-        let currentIndex = 0;
+        const nextButton = document.getElementById('nextButton');
 
-        function loadNextVisualization() {
-            if (currentIndex < visualizations.length) {
-                // Update iframe source and message
-                frame.src = visualizations[currentIndex];
-                message.textContent = `Visualization ${currentIndex + 1} is loading...`;
-
-                // Set a timeout for the next visualization
-                setTimeout(() => {
-                    currentIndex++;
-                    loadNextVisualization();
-                }, durations[currentIndex]);
-            } else {
-                // All visualizations finished
-                message.textContent = "All visualizations have been displayed.";
-                frame.style.display = 'none'; // Optionally hide the iframe
-            }
+        // Function to load the current visualization
+        function loadVisualization() {
+            frame.src = visualizations[currentIndex];
+            message.textContent = `Visualization ${currentIndex + 1} is loading...`;
         }
 
-        // Start the sequence
-        loadNextVisualization();
+        // Toggle fullscreen mode on double click
+        frame.addEventListener('dblclick', () => {
+            frame.classList.toggle('fullscreen');
+        });
+
+        // Next button logic
+        nextButton.addEventListener('click', () => {
+            currentIndex++;
+            if (currentIndex < visualizations.length) {
+                loadVisualization();
+                message.textContent = `Visualization ${currentIndex + 1} is loading...`;
+            } else {
+                message.textContent = "All visualizations have been displayed.";
+                frame.style.display = 'none';
+                nextButton.style.display = 'none'; // Hide the Next button
+            }
+        });
+
+        // Initialize the first visualization
+        loadVisualization();
+
     </script>
 </body>
 </html>
