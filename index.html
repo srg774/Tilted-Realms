@@ -93,32 +93,28 @@
             frame.src = visualizations[currentIndex];
         }
 
-        // Show the "Next" button after the first click/touch on the body
-        let hasInteracted = false;
+        // Function to show the "Next" button
         function showNextButton() {
-            if (!hasInteracted) {
-                nextButton.classList.add('show'); // Show the "Next" button
-                hasInteracted = true;
-            }
+            nextButton.classList.add('show'); // Show the "Next" button
         }
 
-        // Add event listeners for mouse click and touch events
+        // Add event listeners to body for touch and mouse interactions to show the button
         document.body.addEventListener('click', showNextButton);
         document.body.addEventListener('touchstart', showNextButton);
 
         // Logic for the "Next" button to load the next visualization
         nextButton.addEventListener('click', () => {
-            currentIndex++;
+            currentIndex++; // Increment to the next visualization
             if (currentIndex < visualizations.length) {
                 loadVisualization();
             } else {
-                // All visualizations finished
+                // All visualizations finished, hide everything
                 frame.style.display = 'none';
                 nextButton.style.display = 'none';
             }
         });
 
-        // Initialize the first visualization
+        // Initialize the first visualization immediately
         loadVisualization();
     </script>
 </body>
