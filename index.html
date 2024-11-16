@@ -98,14 +98,16 @@
 
         // Function to handle the "Next" button click
         nextButton.addEventListener('click', () => {
-            currentIndex++; // Move to the next visualization
-            if (currentIndex < visualizations.length) {
-                loadVisualization();
+            // Switch visualizations in a cyclic manner, 
+            // but in portrait mode start from a different index
+            if (window.innerHeight > window.innerWidth) { 
+                // If in portrait mode, reverse order
+                currentIndex = (currentIndex + 1) % visualizations.length; 
             } else {
-                // Once all visualizations have been shown, reset to the first one
-                currentIndex = 0;
-                loadVisualization();
+                // If in landscape mode, continue normal order
+                currentIndex = (currentIndex + 1) % visualizations.length;
             }
+            loadVisualization();
         });
 
         // Initialize the first visualization immediately
