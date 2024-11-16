@@ -18,11 +18,12 @@
             overflow: hidden; /* Prevent scrollbars */
         }
 
+        /* Ensure iframe fits the screen perfectly */
         iframe {
-            width: 100vw; /* Full width */
-            height: 100vh; /* Full height */
+            width: 100%;
+            height: 100%;
             border: none;
-            transition: all 0.3s ease;
+            display: block;
         }
 
         #nextButton {
