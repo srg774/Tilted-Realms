@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sequential Visualizations</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        iframe {
+            width: 80%;
+            height: 80vh;
+            border: none;
+            margin: 20px auto;
+        }
+        .message {
+            font-size: 18px;
+            margin: 10px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <h1>Sequential Visualizations</h1>
+    <div class="message" id="message">Visualization 1 is loading...</div>
+    <iframe id="visualizationFrame"></iframe>
+
+    <script>
+        const visualizations = [
+            "viz.html",  // First visualization
+            "viz1.html", // Second visualization
+            "viz2.html"  // Third visualization
+        ];
+
+        const durations = [10000, 15000, 20000]; // Time each visualization will display (in milliseconds)
+
+        const frame = document.getElementById('visualizationFrame');
+        const message = document.getElementById('message');
+        let currentIndex = 0;
+
+        function loadNextVisualization() {
+            if (currentIndex < visualizations.length) {
+                // Update iframe source and message
+                frame.src = visualizations[currentIndex];
+                message.textContent = `Visualization ${currentIndex + 1} is loading...`;
+
+                // Set a timeout for the next visualization
+                setTimeout(() => {
+                    currentIndex++;
+                    loadNextVisualization();
+                }, durations[currentIndex]);
+            } else {
+                // All visualizations finished
+                message.textContent = "All visualizations have been displayed.";
+                frame.style.display = 'none'; // Optionally hide the iframe
+            }
+        }
+
+        // Start the sequence
+        loadNextVisualization();
+    </script>
+</body>
+</html>
