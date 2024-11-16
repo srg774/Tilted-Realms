@@ -33,7 +33,7 @@
             height: 70px; /* Size of the button */
             background-color: #121212;
             color: #00FFCC;
-            font-size: 36px;  /* Arrow size */
+            font-size: 30px;  /* Smaller arrow size */
             border-radius: 50%; /* Circular button */
             border: 2px solid #00FFCC;
             display: flex;
@@ -42,6 +42,7 @@
             cursor: pointer;
             transition: transform 0.3s ease, background-color 0.3s ease;
             z-index: 1; /* Ensure button is on top */
+            box-shadow: 0 0 5px #00FFCC, 0 0 10px #00FFCC; /* Glowing effect */
         }
 
         #nextButton:hover {
@@ -53,11 +54,27 @@
         #nextButton:focus {
             outline: none;
         }
+
+        /* Glowing effect for the arrow */
+        #nextButton {
+            animation: glow 1.5s infinite ease-in-out;
+        }
+
+        @keyframes glow {
+            0% { box-shadow: 0 0 5px #00FFCC, 0 0 10px #00FFCC, 0 0 20px #00FFCC; }
+            50% { box-shadow: 0 0 10px #00FFCC, 0 0 20px #00FFCC, 0 0 30px #00FFCC; }
+            100% { box-shadow: 0 0 5px #00FFCC, 0 0 10px #00FFCC, 0 0 20px #00FFCC; }
+        }
+
+        /* Make sure the button text (→) stays well centered */
+        #nextButton span {
+            font-size: 30px;  /* Smaller arrow */
+        }
     </style>
 </head>
 <body>
     <iframe id="visualizationFrame"></iframe>
-    <button id="nextButton">→</button>
+    <button id="nextButton"><span>→</span></button>
 
     <script>
         const visualizations = [
