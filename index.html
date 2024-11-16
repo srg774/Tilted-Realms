@@ -29,34 +29,46 @@
             position: fixed;
             bottom: 20px;
             right: 20px;
-            width: 50px;
-            height: 50px;
+            width: 80px;  /* Larger size for better visibility */
+            height: 80px;
             background-color: #121212;
             color: #00FFCC;
-            font-size: 30px;
+            font-size: 40px;  /* Increase size of the arrow */
             border-radius: 50%;
             border: 2px solid #00FFCC;
             display: none; /* Hidden initially */
             cursor: pointer;
             text-align: center;
-            line-height: 50px;
+            line-height: 80px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
-            opacity: 0.7; /* Subtle appearance */
-            transition: opacity 0.3s ease;
+            opacity: 0; /* Start with opacity 0 */
+            transition: opacity 0.5s ease, transform 0.3s ease;
+        }
+
+        #nextButton.show {
+            display: block;
+            opacity: 1;  /* Make the button visible */
         }
 
         #nextButton:hover {
             background-color: #00FFCC;
             color: #121212;
+            transform: scale(1.2); /* Slight grow effect */
         }
 
         #nextButton:focus {
             outline: none;
         }
 
-        /* Optional: Add some subtle pulse effect on hover */
-        #nextButton:active {
-            transform: scale(1.1);
+        /* Optional: Add a bounce effect when the button is first shown */
+        @keyframes bounce {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0); }
+        }
+
+        #nextButton.show {
+            animation: bounce 1s ease infinite;
         }
     </style>
 </head>
@@ -84,8 +96,7 @@
         let hasInteracted = false;
         document.body.addEventListener('click', () => {
             if (!hasInteracted) {
-                nextButton.style.display = 'block'; // Show the "Next" button
-                nextButton.style.opacity = 1; // Make it fully visible
+                nextButton.classList.add('show'); // Show the "Next" button
                 hasInteracted = true;
             }
         });
