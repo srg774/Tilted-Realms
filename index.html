@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sequential Visualizations</title>
     <style>
         body {
@@ -15,37 +15,22 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow-x: hidden; /* Prevent horizontal scrolling */
-            overflow-y: auto;   /* Allow vertical scrolling */
+            overflow: hidden; /* Prevent scrollbars */
         }
 
         /* Ensure iframe fits the screen perfectly */
         iframe {
             width: 100%;
-            height: 100vh; /* Use full viewport height */
+            height: 100%;
             border: none;
             display: block;
         }
 
-        @media (orientation: portrait) {
-            iframe {
-                width: 100%;
-                height: 80vh; /* Adjust height in portrait mode */
-            }
-        }
-
-        @media (orientation: landscape) {
-            iframe {
-                width: 100%;
-                height: 100vh; /* Full height in landscape */
-            }
-        }
-
         #nextButton {
             position: fixed;
-            bottom: 30px; /* 30px from the bottom */
-            right: 30px;  /* 30px from the right */
-            font-size: 48px;  /* Arrow size */
+            bottom: 5%; /* 5% from the bottom to keep it visible in both orientations */
+            right: 5%;  /* 5% from the right to keep it in the corner */
+            font-size: 10vw;  /* Default arrow size based on viewport width */
             color: #00FFCC;  /* Glowing teal color */
             cursor: pointer;
             z-index: 1; /* Ensure button is on top */
@@ -74,6 +59,29 @@
             50% { text-shadow: 0 0 10px #00FFCC, 0 0 20px #00FFCC, 0 0 30px #00FFCC; }
             100% { text-shadow: 0 0 5px #00FFCC, 0 0 10px #00FFCC, 0 0 20px #00FFCC; }
         }
+
+        /* Media Query for smaller screens (portrait mode) */
+        @media (max-width: 600px) {
+            #nextButton {
+                font-size: 15vw; /* Increase arrow size in portrait mode */
+            }
+        }
+
+        /* Media Query for larger screens (landscape mode) */
+        @media (min-width: 601px) and (max-width: 768px) {
+            #nextButton {
+                font-size: 12vw; /* Adjust size for tablet-sized screens */
+            }
+        }
+
+        /* Media Query for very small screens (portrait phones) */
+        @media (max-width: 400px) {
+            #nextButton {
+                font-size: 18vw; /* Reduce size for very small screens */
+                bottom: 3%; /* Adjust position for better visibility */
+                right: 3%;
+            }
+        }
     </style>
 </head>
 <body>
@@ -98,16 +106,14 @@
 
         // Function to handle the "Next" button click
         nextButton.addEventListener('click', () => {
-            // Switch visualizations in a cyclic manner, 
-            // but in portrait mode start from a different index
-            if (window.innerHeight > window.innerWidth) { 
-                // If in portrait mode, reverse order
-                currentIndex = (currentIndex + 1) % visualizations.length; 
+            currentIndex++; // Move to the next visualization
+            if (currentIndex < visualizations.length) {
+                loadVisualization();
             } else {
-                // If in landscape mode, continue normal order
-                currentIndex = (currentIndex + 1) % visualizations.length;
+                // Once all visualizations have been shown, reset to the first one
+                currentIndex = 0;
+                loadVisualization();
             }
-            loadVisualization();
         });
 
         // Initialize the first visualization immediately
