@@ -12,6 +12,10 @@
             margin: 0;
             padding: 0;
             overflow: hidden; /* Prevent scrollbars */
+            height: 100vh; /* Ensure full height */
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         iframe {
@@ -37,6 +41,8 @@
             text-align: center;
             line-height: 50px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+            opacity: 0.7; /* Subtle appearance */
+            transition: opacity 0.3s ease;
         }
 
         #nextButton:hover {
@@ -46,6 +52,11 @@
 
         #nextButton:focus {
             outline: none;
+        }
+
+        /* Optional: Add some subtle pulse effect on hover */
+        #nextButton:active {
+            transform: scale(1.1);
         }
     </style>
 </head>
@@ -69,9 +80,14 @@
             frame.src = visualizations[currentIndex];
         }
 
-        // Show the next button when the user touches/clicks anywhere on the screen
+        // Show the "Next" button after the first click/touch on the body
+        let hasInteracted = false;
         document.body.addEventListener('click', () => {
-            nextButton.style.display = 'block'; // Show the "Next" button
+            if (!hasInteracted) {
+                nextButton.style.display = 'block'; // Show the "Next" button
+                nextButton.style.opacity = 1; // Make it fully visible
+                hasInteracted = true;
+            }
         });
 
         // Logic for the "Next" button to load the next visualization
