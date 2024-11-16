@@ -6,51 +6,52 @@
     <title>Sequential Visualizations</title>
     <style>
         body {
-            background-color: #121212;
-            color: #00FF00; /* Neon green text */
+            background-color: #121212; /* Dark background */
+            color: #00FFCC; /* Neon teal text */
             font-family: Arial, sans-serif;
-            text-align: center;
             margin: 0;
             padding: 0;
+            overflow: hidden; /* Prevent scrollbars */
         }
+
         iframe {
-            width: 80%;
-            height: 80vh;
-            border: none;
-            margin: 20px auto;
-            transition: all 0.3s ease;
-        }
-        #visualizationFrame.fullscreen {
             width: 100vw;
             height: 100vh;
-        }
-        .message {
-            font-size: 18px;
-            margin: 10px;
-            color: #00FF00;
-        }
-        .button {
-            background-color: #00FF00;
-            color: #121212;
             border: none;
-            padding: 15px 30px;
-            font-size: 16px;
-            margin: 20px;
-            cursor: pointer;
-            border-radius: 5px;
-            transition: background-color 0.3s;
+            transition: all 0.3s ease;
         }
-        .button:hover {
-            background-color: #007700;
+
+        #nextButton {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background-color: #121212;
+            color: #00FFCC;
+            font-size: 30px;
+            border-radius: 50%;
+            border: 2px solid #00FFCC;
+            display: none; /* Hidden initially */
+            cursor: pointer;
+            text-align: center;
+            line-height: 50px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+        }
+
+        #nextButton:hover {
+            background-color: #00FFCC;
+            color: #121212;
+        }
+
+        #nextButton:focus {
+            outline: none;
         }
     </style>
 </head>
 <body>
-    <h1>Sequential Visualizations</h1>
-    <div class="message" id="message">Visualization 1 is loading...</div>
     <iframe id="visualizationFrame"></iframe>
-    <br>
-    <button id="nextButton" class="button">Next Visualization</button>
+    <button id="nextButton">→</button>
 
     <script>
         const visualizations = [
@@ -61,36 +62,32 @@
 
         let currentIndex = 0;
         const frame = document.getElementById('visualizationFrame');
-        const message = document.getElementById('message');
         const nextButton = document.getElementById('nextButton');
 
         // Function to load the current visualization
         function loadVisualization() {
             frame.src = visualizations[currentIndex];
-            message.textContent = `Visualization ${currentIndex + 1} is loading...`;
         }
 
-        // Toggle fullscreen mode on double click
-        frame.addEventListener('dblclick', () => {
-            frame.classList.toggle('fullscreen');
+        // Show the next button when the user touches/clicks anywhere on the screen
+        document.body.addEventListener('click', () => {
+            nextButton.style.display = 'block'; // Show the "Next" button
         });
 
-        // Next button logic
+        // Logic for the "Next" button to load the next visualization
         nextButton.addEventListener('click', () => {
             currentIndex++;
             if (currentIndex < visualizations.length) {
                 loadVisualization();
-                message.textContent = `Visualization ${currentIndex + 1} is loading...`;
             } else {
-                message.textContent = "All visualizations have been displayed.";
+                // All visualizations finished
                 frame.style.display = 'none';
-                nextButton.style.display = 'none'; // Hide the Next button
+                nextButton.style.display = 'none';
             }
         });
 
         // Initialize the first visualization
         loadVisualization();
-
     </script>
 </body>
 </html>
