@@ -11,30 +11,32 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             flex-direction: column;
+            height: 100vh;
+            overflow: hidden; /* Prevent scrollbars */
         }
 
         iframe {
-            width: 80vw;
-            height: 80vh;
+            width: 100vw; /* Full width */
+            height: 100vh; /* Full height */
             border: none;
             transition: all 0.3s ease;
         }
 
         #nextButton {
-            margin-top: 20px; /* Space between iframe and button */
-            padding: 15px 30px;
+            position: absolute;
             background-color: #121212;
             color: #00FFCC;
             font-size: 24px;
             border: 2px solid #00FFCC;
             border-radius: 8px;
             cursor: pointer;
+            padding: 15px 30px;
             transition: transform 0.3s ease;
+            z-index: 1; /* Ensure button is above iframe */
         }
 
         #nextButton:hover {
