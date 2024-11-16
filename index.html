@@ -11,11 +11,10 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
+            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            flex-direction: column;
-            height: 100vh;
             overflow: hidden; /* Prevent scrollbars */
         }
 
@@ -27,16 +26,22 @@
         }
 
         #nextButton {
-            position: absolute;
+            position: fixed;
+            bottom: 30px; /* 30px from the bottom */
+            right: 30px;  /* 30px from the right */
+            width: 70px;  /* Size of the button */
+            height: 70px; /* Size of the button */
             background-color: #121212;
             color: #00FFCC;
-            font-size: 24px;
+            font-size: 36px;  /* Arrow size */
+            border-radius: 50%; /* Circular button */
             border: 2px solid #00FFCC;
-            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             cursor: pointer;
-            padding: 15px 30px;
-            transition: transform 0.3s ease;
-            z-index: 1; /* Ensure button is above iframe */
+            transition: transform 0.3s ease, background-color 0.3s ease;
+            z-index: 1; /* Ensure button is on top */
         }
 
         #nextButton:hover {
@@ -52,7 +57,7 @@
 </head>
 <body>
     <iframe id="visualizationFrame"></iframe>
-    <button id="nextButton">Next Visualization</button>
+    <button id="nextButton">→</button>
 
     <script>
         const visualizations = [
