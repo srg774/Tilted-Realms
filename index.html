@@ -30,10 +30,13 @@
             bottom: 30px; /* 30px from the bottom */
             right: 30px;  /* 30px from the right */
             font-size: 48px;  /* Arrow size */
-            color: #00FFCC;
+            color: #00FFCC;  /* Glowing teal color */
             cursor: pointer;
             z-index: 1; /* Ensure button is on top */
             transition: transform 0.3s ease, color 0.3s ease;
+            background: none; /* No background */
+            border: none; /* No border */
+            text-shadow: 0 0 5px #00FFCC, 0 0 10px #00FFCC, 0 0 20px #00FFCC; /* Glowing effect */
         }
 
         #nextButton:hover {
@@ -45,7 +48,7 @@
             outline: none;
         }
 
-        /* Glowing effect for the arrow */
+        /* Glowing effect animation */
         #nextButton {
             animation: glow 1.5s infinite ease-in-out;
         }
