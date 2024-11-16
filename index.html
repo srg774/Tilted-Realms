@@ -11,44 +11,30 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            overflow: hidden; /* Prevent scrollbars */
             height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
+            flex-direction: column;
         }
 
         iframe {
-            width: 100vw;
-            height: 100vh;
+            width: 80vw;
+            height: 80vh;
             border: none;
             transition: all 0.3s ease;
         }
 
         #nextButton {
-            position: fixed;
-            bottom: 30px; /* Positioned 30px from bottom */
-            right: 30px;  /* Positioned 30px from right */
-            width: 70px;  /* Size of the button */
-            height: 70px;
+            margin-top: 20px; /* Space between iframe and button */
+            padding: 15px 30px;
             background-color: #121212;
             color: #00FFCC;
-            font-size: 36px;  /* Size of the arrow */
-            border-radius: 50%;
+            font-size: 24px;
             border: 2px solid #00FFCC;
-            display: none; /* Hidden initially */
+            border-radius: 8px;
             cursor: pointer;
-            text-align: center;
-            line-height: 70px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
-            opacity: 0; /* Make it invisible initially */
-            transition: opacity 0.4s ease, transform 0.3s ease;
-        }
-
-        #nextButton.show {
-            display: block;   /* Make it visible */
-            opacity: 1;       /* Fully visible */
-            transform: scale(1);  /* No scaling initially */
+            transition: transform 0.3s ease;
         }
 
         #nextButton:hover {
@@ -60,22 +46,11 @@
         #nextButton:focus {
             outline: none;
         }
-
-        /* Optional: Glow effect */
-        #nextButton.show {
-            animation: glow 1.5s infinite ease-in-out;
-        }
-
-        @keyframes glow {
-            0% { box-shadow: 0 0 5px #00FFCC, 0 0 10px #00FFCC, 0 0 20px #00FFCC; }
-            50% { box-shadow: 0 0 10px #00FFCC, 0 0 20px #00FFCC, 0 0 30px #00FFCC; }
-            100% { box-shadow: 0 0 5px #00FFCC, 0 0 10px #00FFCC, 0 0 20px #00FFCC; }
-        }
     </style>
 </head>
 <body>
     <iframe id="visualizationFrame"></iframe>
-    <button id="nextButton">→</button>
+    <button id="nextButton">Next Visualization</button>
 
     <script>
         const visualizations = [
@@ -93,24 +68,15 @@
             frame.src = visualizations[currentIndex];
         }
 
-        // Function to show the "Next" button
-        function showNextButton() {
-            nextButton.classList.add('show'); // Show the "Next" button
-        }
-
-        // Add event listeners to body for touch and mouse interactions to show the button
-        document.body.addEventListener('click', showNextButton);
-        document.body.addEventListener('touchstart', showNextButton);
-
-        // Logic for the "Next" button to load the next visualization
+        // Function to handle the "Next" button click
         nextButton.addEventListener('click', () => {
-            currentIndex++; // Increment to the next visualization
+            currentIndex++; // Move to the next visualization
             if (currentIndex < visualizations.length) {
                 loadVisualization();
             } else {
-                // All visualizations finished, hide everything
-                frame.style.display = 'none';
-                nextButton.style.display = 'none';
+                // Once all visualizations have been shown, reset to the first one
+                currentIndex = 0;
+                loadVisualization();
             }
         });
 
